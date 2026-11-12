@@ -151,10 +151,10 @@ impl Sideloader {
             .await?;
 
         for app_id in app_ids.iter_mut() {
-            if watch_bundle_ids.contains(&app_id.identifier) {
-                continue;
-            }
-
+            // PATCH: 原代码在此处会跳过 Watch bundle（continue），导致手表 App 的
+            // App ID 既不启用 App Groups capability，也不分配 App Group，
+            // 最终描述文件里没有 application-groups，手表端 HermesEnabler2 报
+            // "An App Group ID may be missing"。此处改为手表 App 也一并分配。
             app_id
                 .ensure_group_feature(&mut self.dev_session, &team)
                 .await?;
